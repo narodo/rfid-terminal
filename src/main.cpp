@@ -1,109 +1,63 @@
-//  ESP8266_ILI9341_Adafruit_demo
-//
-// Interfacing ESP8266 NodeMCU with ILI9341 TFT display (240x320 pixel).
-//
-//
-// pins: TFT SPI ILI9341 --------  ESP8266 
-//                 VCC  --------     VCC  - note- Wemos - 5V
-//                 GND  --------     GND 
-//                 CS   --------     D2
-//                 RST  --------     D3
-//                 D/C  --------     D4
-//                 MOSI --------     D7  
-//                 SCK  --------     D5       
-//                 BL   --------     VCC - note - Wemos 5V
-//
-// open source - thanks to all contributors
- 
+// GxEPD2_HelloWorld.ino by Jean-Marc Zingg
+
+// see GxEPD2_wiring_examples.h for wiring suggestions and examples
+// if you use a different wiring, you need to adapt the constructor parameters!
+
+// uncomment next line to use class GFX of library GFX_Root instead of Adafruit_GFX
+//#include <GFX.h>
+
 #include <Arduino.h>
-#include <Adafruit_GFX.h>                                                   // include Adafruit graphics library
-#include <Adafruit_ILI9341.h>                                               // include Adafruit ILI9341 TFT library
-#include <Framebuffer_GFX.h>
 #include <Wire.h>
-#include "ESP8266WiFi.h"
-#include <SimpleSerialShell.h>
+#include <GxEPD2_BW.h>
+#include <GxEPD2_3C.h>
+#include <Fonts/FreeMonoBold9pt7b.h>
+#include <Framebuffer_GFX.h>
 
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-#include <freertos/semphr.h>
-#include <freertos/queue.h>
+// select the display class and display driver class in the following file (new style):
+#include "GxEPD2_display_selection_new_style.h"
 
-#define TFT_CS    D2                                                        // TFT CS  pin is connected to NodeMCU pin D2
-#define TFT_RST   D3                                                        // TFT RST pin is connected to NodeMCU pin D3
-#define TFT_DC    D4                                                        // TFT DC  pin is connected to NodeMCU pin D4
+// or select the display constructor line in one of the following files (old style):
+//#include "GxEPD2_display_selection.h"
+//#include "GxEPD2_display_selection_added.h"
 
-// SCK (CLK) ---> NodeMCU pin D5 (GPIO14)
-// MOSI(DIN) ---> NodeMCU pin D7 (GPIO13)
+// alternately you can copy the constructor from GxEPD2_display_selection.h or GxEPD2_display_selection_added.h to here
+// e.g. for Wemos D1 mini:
+//GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display(GxEPD2_154_D67(/*CS=D8*/ SS, /*DC=D3*/ 0, /*RST=D4*/ 2, /*BUSY=D2*/ 4)); // GDEH0154D67
 
-   Adafruit_ILI9341 tft = Adafruit_ILI9341 (TFT_CS, TFT_DC, TFT_RST);
-   int delayTime = 500;
+const char HelloWorld[] = "Hello World!";
 
-unsigned long testFillScreen () {
-
-  unsigned long start = micros ();
-   tft.fillScreen (ILI9341_BLACK);
-   tft.fillScreen (ILI9341_RED);
-   tft.fillScreen (ILI9341_GREEN);
-   tft.fillScreen (ILI9341_BLUE);
-   tft.fillScreen (ILI9341_BLACK);
-   return micros () - start;
-}
- 
- 
-int showID(int /*argc*/ = 0, char** /*argv*/ = NULL)
+void helloWorld()
 {
-    shell.println(F( "Running " __FILE__ ",\nBuilt " __DATE__));
-    return 0;
-};
-
-void runshell() {
-    while(1) {
-      shell.executeIfInput();
-      vTaskDelay(100 / portTICK_PERIOD_MS);
-    }
-}
- 
-void setup() {
-
-
-    xTaskCreate(
-            runshell,
-            "Run Shell",
-            1000,
-            NULL,
-            1,
-            NULL
-    );
- 
-   Serial.begin (115200);
-   Serial.println ("ILI9341 Test!"); 
-
-   shell.attach(Serial);
-   shell.addCommand(F("id?"), showID);
-
-   WiFi.mode(WIFI_STA);
-   WiFi.disconnect();
- 
-   tft.begin();
- 
- 
-   Serial.println (F("Done!"));
-}
-
-
- 
- 
-void loop(void) {
-
-  int n = WiFi.scanNetworks();
-
-
-  for (int i = 0; i < n; i++)
+  display.setRotation(1);
+  display.setFont(&FreeMonoBold9pt7b);
+  display.setTextColor(GxEPD_BLACK);
+  int16_t tbx, tby; uint16_t tbw, tbh;
+  display.getTextBounds(HelloWorld, 0, 0, &tbx, &tby, &tbw, &tbh);
+  // center the bounding box by transposition of the origin:
+  uint16_t x = ((display.width() - tbw) / 2) - tbx;
+  uint16_t y = ((display.height() - tbh) / 2) - tby;
+  display.setFullWindow();
+  display.firstPage();
+  do
   {
-    tft.println(WiFi.SSID(i));
+    display.fillScreen(GxEPD_WHITE);
+    display.setCursor(x, y);
+    //display.print(HelloWorld);
   }
-
-
-  delay(100);
+  while (display.nextPage());
 }
- 
+
+void setup()
+{
+  Serial.begin (115200);
+  Serial.println ("ILI9341 Test!"); 
+  display.init(115200, true, 2, false);
+  helloWorld();
+  display.hibernate();
+}
+
+
+void loop() {
+
+    delay(1000);
+};
