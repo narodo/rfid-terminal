@@ -7,24 +7,36 @@
 //#include <GFX.h>
 
 #include <Arduino.h>
+#include "esp32-hal-spi.h"
 #include <Wire.h>
 #include <GxEPD2_BW.h>
 #include <GxEPD2_3C.h>
 #include <Fonts/FreeMonoBold9pt7b.h>
 #include <Framebuffer_GFX.h>
+#include <Adafruit_PN532.h>
 
 // select the display class and display driver class in the following file (new style):
 #include "GxEPD2_display_selection_new_style.h"
 
-// or select the display constructor line in one of the following files (old style):
-//#include "GxEPD2_display_selection.h"
-//#include "GxEPD2_display_selection_added.h"
+#include <FastLED.h>
 
-// alternately you can copy the constructor from GxEPD2_display_selection.h or GxEPD2_display_selection_added.h to here
-// e.g. for Wemos D1 mini:
-//GxEPD2_BW<GxEPD2_154_D67, GxEPD2_154_D67::HEIGHT> display(GxEPD2_154_D67(/*CS=D8*/ SS, /*DC=D3*/ 0, /*RST=D4*/ 2, /*BUSY=D2*/ 4)); // GDEH0154D67
+// How many leds in your strip?
+#define NUM_LEDS 1
 
-const char HelloWorld[] = "Hello World!";
+#define DATA_PIN 18
+
+// Define the array of leds
+CRGB leds[NUM_LEDS];
+
+#define PN532_IRQ  (12)
+#define PN532_RESET (13)
+//
+Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
+
+// Or use this line for a breakout or shield with an I2C connection:
+
+
+const char HelloWorld[] = "Hello World! - ";
 
 void helloWorld()
 {
@@ -42,22 +54,76 @@ void helloWorld()
   {
     display.fillScreen(GxEPD_WHITE);
     display.setCursor(x, y);
-    //display.print(HelloWorld);
+    display.print(HelloWorld);
   }
   while (display.nextPage());
 }
 
 void setup()
 {
-  Serial.begin (115200);
-  Serial.println ("ILI9341 Test!"); 
+
   display.init(115200, true, 2, false);
+  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // GRB ordering is assumed
+
+  leds[0] = CRGB::Yellow;
+  FastLED.show();
+
   helloWorld();
   display.hibernate();
+  Serial.println ("-- Begin -- "); 
+  nfc.begin();
+
+  uint32_t versiondata = nfc.getFirmwareVersion();
+  if (! versiondata) {
+    Serial.print("Didn't find PN53x board");
+    while (1); // halt
+  }
+  
+  // Got ok data, print it out!
+  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
+  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
+  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  
+  // Set the max number of retry attempts to read from a card
+  // This prevents us from waiting forever for a card, which is
+  // the default behaviour of the PN532.
+  nfc.setPassiveActivationRetries(0xFF);
+  
+  // configure board to read RFID tags
+  nfc.SAMConfig();
+  
+  Serial.println("Waiting for an ISO14443A card");
 }
 
+void loop(void) {
+  boolean success;
+  uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };	// Buffer to store the returned UID
+  uint8_t uidLength;				// Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+  
+  // Wait for an ISO14443A type cards (Mifare, etc.).  When one is found
+  // 'uid' will be populated with the UID, and uidLength will indicate
+  // if the uid is 4 bytes (Mifare Classic) or 7 bytes (Mifare Ultralight)
+  success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, &uid[0], &uidLength);
+  
+  if (success) {
+    leds[0] = CRGB::Green;
+    leds[0].fadeLightBy(64);
+    FastLED.show();
 
-void loop() {
-
-    delay(1000);
-};
+    Serial.println("Found a card!");
+    Serial.print("UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+    Serial.print("UID Value: ");
+    for (uint8_t i=0; i < uidLength; i++) 
+    {
+      Serial.print(" 0x");Serial.print(uid[i], HEX); 
+    }
+    Serial.println("");
+	// Wait 1 second before continuing
+	delay(1000);
+  }
+  else
+  {
+    // PN532 probably timed out waiting for a card
+    Serial.println("Timed out waiting for a card");
+  }
+}
