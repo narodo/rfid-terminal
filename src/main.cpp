@@ -7,16 +7,11 @@
 //#include <GFX.h>
 
 #include <Arduino.h>
-#include "esp32-hal-spi.h"
 #include <Wire.h>
-#include <GxEPD2_BW.h>
-#include <GxEPD2_3C.h>
-#include <Fonts/FreeMonoBold9pt7b.h>
-#include <Framebuffer_GFX.h>
 #include <Adafruit_PN532.h>
-
-// select the display class and display driver class in the following file (new style):
-#include "GxEPD2_display_selection_new_style.h"
+#include <WiFi.h>
+#include "web.h"
+#include "display.h"
 
 #include <FastLED.h>
 
@@ -24,6 +19,14 @@
 #define NUM_LEDS 1
 
 #define DATA_PIN 18
+
+#define TERMINAL_ID 1
+
+
+const char* ssid   = "ssid";
+const char* passwd = "pwd";
+
+String serverName = "http://192.168.0.100:8080/";
 
 // Define the array of leds
 CRGB leds[NUM_LEDS];
@@ -36,42 +39,38 @@ Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
 // Or use this line for a breakout or shield with an I2C connection:
 
 
-const char HelloWorld[] = "Hello World! - ";
 
-void helloWorld()
-{
-  display.setRotation(1);
-  display.setFont(&FreeMonoBold9pt7b);
-  display.setTextColor(GxEPD_BLACK);
-  int16_t tbx, tby; uint16_t tbw, tbh;
-  display.getTextBounds(HelloWorld, 0, 0, &tbx, &tby, &tbw, &tbh);
-  // center the bounding box by transposition of the origin:
-  uint16_t x = ((display.width() - tbw) / 2) - tbx;
-  uint16_t y = ((display.height() - tbh) / 2) - tby;
-  display.setFullWindow();
-  display.firstPage();
-  do
-  {
-    display.fillScreen(GxEPD_WHITE);
-    display.setCursor(x, y);
-    display.print(HelloWorld);
-  }
-  while (display.nextPage());
-}
+
 
 void setup()
 {
 
-  display.init(115200, true, 2, false);
+
   FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // GRB ordering is assumed
 
   leds[0] = CRGB::Yellow;
   FastLED.show();
 
+  DisplayInit();
   helloWorld();
-  display.hibernate();
+
+  WiFi.begin(ssid, passwd);
+  Serial.println("Connecting");
+  while(WiFi.status() != WL_CONNECTED) {
+	  delay(500);
+	  Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.print("Connected to WiFi network with IP Address: ");
+  Serial.println(WiFi.localIP());
+
+  Serial.println(httpGETRequest("http://192.168.0.100:8080/terminal/1"));
+
   Serial.println ("-- Begin -- "); 
   nfc.begin();
+
+
 
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {

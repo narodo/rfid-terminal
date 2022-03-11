@@ -1,3 +1,5 @@
+#ifndef _DISPLAY_SELECTION_HEADER_GUARD_
+#define _DISPLAY_SELECTION_HEADER_GUARD_
 // Display Library example for SPI e-paper panels from Dalian Good Display and boards from Waveshare.
 // Requires HW SPI and Adafruit_GFX. Caution: the e-paper panels require 3.3V supply AND data lines!
 //
@@ -93,7 +95,7 @@
 #define IS_GxEPD2_7C(x) IS_GxEPD(GxEPD2_7C_IS_, x)
 #define IS_GxEPD2_1248(x) IS_GxEPD(GxEPD2_1248_IS_, x)
 
-#include "GxEPD2_selection_check.h"
+#include "GxEPD2/GxEPD2_selection_check.h"
 
 #if defined (ESP8266)
 #define MAX_DISPLAY_BUFFER_SIZE (81920ul-34000ul-5000ul) // ~34000 base use, change 5000 to your application use
@@ -234,3 +236,5 @@ GxEPD2_DISPLAY_CLASS<GxEPD2_DRIVER_CLASS, MAX_HEIGHT(GxEPD2_DRIVER_CLASS)> displ
 #endif
 
 #endif
+
+#endif //guard
