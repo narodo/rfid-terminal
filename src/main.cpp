@@ -1,21 +1,14 @@
-// GxEPD2_HelloWorld.ino by Jean-Marc Zingg
-
-// see GxEPD2_wiring_examples.h for wiring suggestions and examples
-// if you use a different wiring, you need to adapt the constructor parameters!
-
-// uncomment next line to use class GFX of library GFX_Root instead of Adafruit_GFX
-//#include <GFX.h>
-
 #include <Arduino.h>
 #include <Wire.h>
 #include <Adafruit_PN532.h>
 #include <WiFi.h>
+#include <ArduinoLog.h>
+#include "config.h"
 #include "web.h"
 #include "display.h"
 
 #include <FastLED.h>
 
-// How many leds in your strip?
 #define NUM_LEDS 1
 
 #define DATA_PIN 18
@@ -36,24 +29,33 @@ CRGB leds[NUM_LEDS];
 //
 Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
 
-// Or use this line for a breakout or shield with an I2C connection:
-
-
-
-
+String Name  = "TROCKNEN";
+String Location = "Waschkueche";
+String Price = "2.80";
 
 void setup()
 {
 
+  //FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // GRB ordering is assumed
 
-  FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // GRB ordering is assumed
+  //leds[0] = CRGB::Yellow;
+  //FastLED.show();
 
-  leds[0] = CRGB::Yellow;
-  FastLED.show();
-
+  Serial.begin(115200);
+  while(!Serial && !Serial.available()){}
+  Log.begin(LOG_LEVEL, &Serial, 1);
   DisplayInit();
-  helloWorld();
+  testTextbox();
+  //helloWorldUTF8();
 
+
+//helloArduino();
+  //DisplayPrintStatus(Name, Location, Price);
+	//helloFullScreenPartialMode();
+
+  delay(2000);
+  //DisplayError("No WiFi", "notext");
+  /*
   WiFi.begin(ssid, passwd);
   Serial.println("Connecting");
   while(WiFi.status() != WL_CONNECTED) {
@@ -92,9 +94,11 @@ void setup()
   nfc.SAMConfig();
   
   Serial.println("Waiting for an ISO14443A card");
+  */
 }
 
 void loop(void) {
+	/*
   boolean success;
   uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };	// Buffer to store the returned UID
   uint8_t uidLength;				// Length of the UID (4 or 7 bytes depending on ISO14443A card type)
@@ -125,4 +129,5 @@ void loop(void) {
     // PN532 probably timed out waiting for a card
     Serial.println("Timed out waiting for a card");
   }
+  */
 }
