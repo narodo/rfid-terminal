@@ -5,6 +5,7 @@
 #include <GxEPD2_BW.h>
 #include <U8g2_for_Adafruit_GFX.h>
 
+#define MARGINLEFTRIGHT 2
 
 namespace Layout
 {
@@ -18,6 +19,7 @@ enum Alignment {
 enum Style {
     normal,
     box,
+    thickbox,
     line_box
 };
 

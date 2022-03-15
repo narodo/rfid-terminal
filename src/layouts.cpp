@@ -55,11 +55,11 @@ void TextBox::updateConfig() {
     switch(align) 
     {
         case left: 
-            cur_x = x; 
+            cur_x = x + MARGINLEFTRIGHT; 
             Log.trace("Setting up alignment left (cur_x:  %d)\n",  cur_x);
             break;
         case right: 
-            cur_x = x + (width - text_width);
+            cur_x = x + (width - text_width) - MARGINLEFTRIGHT ;
             Log.trace("Setting up alignment right (cur_x:  %d)\n",  cur_x);
             break;
         // centered 
@@ -91,6 +91,8 @@ void TextBox::render() {
 
     switch(style) 
     {
+        case thickbox:
+            display.drawRect(x+1, y+1, width-2, height-2, fg);
         case box:
             display.drawRect(x, y, width, height, fg);
             break;

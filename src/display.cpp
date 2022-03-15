@@ -24,9 +24,9 @@ void testTextbox() {
     //Serial.print(u8g2Fonts.getFontAscent()); 
     //Serial.print(", "); Serial.print(u8g2Fonts.getFontDescent()); Serial.println(")");
 
-    Layout::TextBox TB1(0, 0, 280, 40, u8g2_font_helvB24_te, GxEPD_WHITE, GxEPD_BLACK , Layout::right);
-    Layout::TextBox TB2(10, 42, 260, 40, u8g2_font_helvB12_te, GxEPD_WHITE, GxEPD_BLACK, Layout::left );
-    Layout::TextBox TB3(0, 84 , 280, 40, u8g2_font_helvB24_te, GxEPD_WHITE, GxEPD_BLACK );
+    Layout::TextBox TB1(0, 0, 280, 40, u8g2_font_helvB24_tf, GxEPD_WHITE, GxEPD_BLACK , Layout::right);
+    Layout::TextBox TB2(10, 42, 260, 40, u8g2_font_helvB12_tf, GxEPD_WHITE, GxEPD_BLACK, Layout::left );
+    Layout::TextBox TB3(0, 84 , 280, 40, u8g2_font_helvB24_tf, GxEPD_WHITE, GxEPD_BLACK );
 
     TB1.setAlignment(Layout::right);
     TB1.setStyle(Layout::box);
@@ -35,7 +35,7 @@ void testTextbox() {
     TB2.setStyle(Layout::box);
     TB2.updateContent("My TB2 test!");
     TB3.setAlignment(Layout::center);
-    TB3.setStyle(Layout::box);
+    TB3.setStyle(Layout::thickbox);
     TB3.updateContent("My TB3 super long test!");
 
     display.setFullWindow();
