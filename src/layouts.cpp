@@ -102,4 +102,53 @@ void TextBox::render() {
 
 }
 
+void LayoutMain::refreshAll() {
+
+  display.setFullWindow();
+  display.firstPage();
+  do
+  {
+       TB_title.render(); 
+       TB_main.render(); 
+       TB_sub.render(); 
+  }
+  while (display.nextPage());
+  display.hibernate();
+}
+
+void LayoutMain::updatePartial(TextBox &TB, String new_string) {
+
+    
+  TB.updateContent(new_string);
+  Log.trace("Update Partial: x: %d y: %d, widht: %d, height: %d \n",
+          TB.x, TB.y, TB.width, TB.height);
+  display.setPartialWindow(TB.x, TB.y, TB.width, TB.height);
+
+  display.firstPage();
+  do
+  {
+    display.fillScreen(TB.bg);
+    TB.render();
+  }
+  while (display.nextPage());
+
+}
+
+void LayoutMain::updateTitle(String new_string) {
+
+    updatePartial(TB_title, new_string);
+
+}
+
+void LayoutMain::updateMain(String new_string) {
+
+    updatePartial(TB_main, new_string);
+}
+
+void LayoutMain::updateSub(String new_string) {
+
+    updatePartial(TB_sub, new_string);
+
+}
+
 } //namespace
