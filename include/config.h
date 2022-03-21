@@ -5,4 +5,4 @@
 
 #define LOG_LEVEL LOG_LEVEL_VERBOSE
 
-#endif // guard
+#endif  // guard

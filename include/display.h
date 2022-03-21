@@ -2,9 +2,9 @@
 #define _DISPLAY_HEADER_GUARD_
 
 #include <Arduino.h>
-
 #include <GxEPD2_BW.h>
 #include <GxEPD2_GFX.h>
+
 #include "GxEPD2/GxEPD2_display.h"
 
 void DisplayInit();
@@ -18,6 +18,4 @@ void helloFullScreenPartialMode();
 void helloArduino();
 void testTextbox();
 
-
-
-#endif 
+#endif
