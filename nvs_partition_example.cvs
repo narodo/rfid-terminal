@@ -1,0 +1,8 @@
+# for information see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/nvs_partition_gen.html
+key,type,encoding,value
+connect,namespace,,
+ssid,data,string,"ssid"
+WifiPWD,data,string,"password"
+ServerName,data,string,"http://192.168.0.100:8080/"
+TerminalURL,data,string,"terminal"
+TransactionURL,data,string,"transaction"

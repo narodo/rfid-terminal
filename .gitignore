@@ -1,1 +1,6 @@
 .pio
+.clangd/
+nvs_partition.cvs
+compile_commands.json
+tools/venv/
+tools/temp/

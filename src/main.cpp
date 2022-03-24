@@ -1,61 +1,77 @@
-#include <Adafruit_PN532.h>
 #include <Arduino.h>
+#include <Adafruit_PN532.h>
 #include <ArduinoLog.h>
 #include <FastLED.h>
 #include <WiFi.h>
 #include <Wire.h>
 
-#include "config.h"
 #include "display.h"
 #include "web.h"
+#include "config.h"
 
-#define NUM_LEDS 1
-
-#define DATA_PIN 18
-
-#define TERMINAL_ID 1
 
 
 const char* ssid   = "ssid";
 const char* passwd = "pwd";
 
-String serverName = "http://192.168.0.100:8080/";
 
 // Define the array of leds
-CRGB leds[NUM_LEDS];
+//CRGB leds[NUM_LEDS];
 
-#define PN532_IRQ (12)
-#define PN532_RESET (13)
 //
-Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
+//Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
 
-String Name = "TROCKNEN";
-String Location = "Waschkueche";
-String Price = "2.80";
+
+//String Name = "TROCKNEN";
+//String Location = "Waschkueche";
+//String Price = "2.80";
+
+//
+//settings::SetTerminalUrl("terminals");
+//settings::SetTransactionUrl("transactions");
+
+//websettings.serverName = String("http://192.168.0.100:8080/");
+//websettings.TerminalURL = String(settings.serverName + "/terminal/");
+//websettings.TransactionURL = String(settings.serverName + "/transactions/");
 
 void setup() {
-    // FastLED.addLeds<NEOPIXEL, DATA_PIN>(leds, NUM_LEDS);  // GRB ordering is
-    // assumed
-
-    // leds[0] = CRGB::Yellow;
-    // FastLED.show();
 
     Serial.begin(115200);
     while (!Serial && !Serial.available()) {
     }
-    Log.begin(LOG_LEVEL, &Serial, 1);
+    //Log.begin(LOG_LEVEL, &Serial, 1);
 
-    Serial.printf("Serial Number: %u \n", ESP.getEfuseMac());
+    GlobalSettings g_settings;
 
-    DisplayInit();
-    testTextbox();
+    //g_settings.SetWifiSSID("iwalel");
+    //g_settings.SetWifiPWD("Emmaschatz1");
+    //g_settings.SetServerName("http://192.168.0.100:8080/");
+    //g_settings.SetTerminalURL("terminal");
+    //g_settings.SetTransactionURL("transactions");
+
+
+    //g_settings.clearAll();
+
+    //g_settings.save();
+    g_settings.load();
+    g_settings.print();
+
+    //String httpGETRequest();
+
+
+    //Serial.printf("Serial Number: %u \n", ESP.getEfuseMac());
+    //Serial.printf("server string : %s \n", g_settings.GetServerName());
+    //Serial.printf("WifiSSID string : %s \n", g_settings.GetWifiSSID());
+
+    //DisplayInit();
+    //testTextbox();
     // helloWorldUTF8();
 
     // helloArduino();
     // DisplayPrintStatus(Name, Location, Price);
     // helloFullScreenPartialMode();
 
-    delay(2000);
+    //delay(2000);
     // DisplayError("No WiFi", "notext");
     /*
        WiFi.begin(ssid, passwd);
