@@ -1,7 +1,6 @@
 #ifndef _CONFIG_HEADER_GUARD_
 #define _CONFIG_HEADER_GUARD_
 
-//#include <ArduinoLog.h>
 #include "Arduino.h"
 
 //#define LOG_LEVEL LOG_LEVEL_VERBOSE
@@ -18,42 +17,23 @@
 
 class GlobalSettings {
    public:
-    void SetServerName(char * name) {
-        strcpy(per_settings.ServerName , name);
-    }
-    void SetTerminalURL(char * name) {
-        strcpy(per_settings.TerminalURL , name);
-    }
-    void SetTransactionURL(char * name) {
-        strcpy(per_settings.TransactionURL , name);
-    }
 
-    void SetWifiSSID(char * name) {
-        strcpy(per_settings.WifiSSID , name);
-    }
-
-    void SetWifiPWD(char * name) {
-        strcpy(per_settings.WifiPWD , name);
-    }
-
-    char * GetServerName() {
-        return per_settings.ServerName;
-    };
-    char * GetTerminalURL() {
-        return per_settings.TerminalURL;
-    };
-    char * GetTransactionURL() {
-        return per_settings.TransactionURL;
+    enum settings_key {
+        SSID,
+        PWD,
+        ServerName,
+        TerminalURL,
+        TransactionURL
     };
 
-    char * GetWifiSSID() {
-        return per_settings.WifiSSID;
-    };
+    void SetKey(settings_key key, char *name) {
 
-    char * GetWifiPWD() {
-        return per_settings.WifiPWD;
+        strcpy(connect_settings[key], name);
+    }
+        
+    char * GetKey(settings_key key ) {
+        return connect_settings[key];
     };
-
 
     void save();
     void load();
@@ -62,17 +42,7 @@ class GlobalSettings {
 
    private:
 
-    struct persistent_settings {
-        char WifiSSID[SETTINGS_STR_LEN];
-        char WifiPWD[SETTINGS_STR_LEN];
-        char ServerName[SETTINGS_STR_LEN];
-        char TerminalURL[SETTINGS_STR_LEN];
-        char TransactionURL[SETTINGS_STR_LEN];
-    };
-
-    struct persistent_settings per_settings;
-
-    //};
+    char connect_settings [5][SETTINGS_STR_LEN];
 };
 
 extern GlobalSettings g_settings;
