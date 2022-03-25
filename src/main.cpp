@@ -2,7 +2,6 @@
 #include <Adafruit_PN532.h>
 #include <ArduinoLog.h>
 #include <FastLED.h>
-#include <WiFi.h>
 #include <Wire.h>
 #include <SimpleSerialShell.h>
 
@@ -10,6 +9,7 @@
 #include "web.h"
 #include "config.h"
 #include "shell.h"
+#include "wifi.h"
 
 
 
