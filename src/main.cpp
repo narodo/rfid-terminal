@@ -4,15 +4,18 @@
 #include <FastLED.h>
 #include <WiFi.h>
 #include <Wire.h>
+#include <SimpleSerialShell.h>
 
 #include "display.h"
 #include "web.h"
 #include "config.h"
+#include "shell.h"
 
 
 
 const char* ssid   = "ssid";
 const char* passwd = "pwd";
+GlobalSettings g_settings;
 
 
 // Define the array of leds
@@ -39,22 +42,14 @@ void setup() {
     Serial.begin(115200);
     while (!Serial && !Serial.available()) {
     }
-    //Log.begin(LOG_LEVEL, &Serial, 1);
 
-    GlobalSettings g_settings;
+    shell.attach(Serial);
+    addShellCommands(shell);
 
-    //g_settings.SetWifiSSID("iwalel");
-    //g_settings.SetWifiPWD("Emmaschatz1");
-    //g_settings.SetServerName("http://192.168.0.100:8080/");
-    //g_settings.SetTerminalURL("terminal");
-    //g_settings.SetTransactionURL("transactions");
-
-
-    //g_settings.clearAll();
-
-    //g_settings.save();
     g_settings.load();
+    shell.println(F("\n\n-- Loaded config from flash  --"));
     g_settings.print();
+    shell.println(F("-- -- -- -- -- -- -- -- -- -- --"));
 
     //String httpGETRequest();
 
@@ -116,6 +111,8 @@ void setup() {
 }
 
 void loop(void) {
+
+    shell.executeIfInput();
     /*
        boolean success;
        uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };	// Buffer to store the returned
