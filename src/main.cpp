@@ -9,7 +9,6 @@
 #include "web.h"
 #include "config.h"
 #include "shell.h"
-#include "wifi.h"
 
 
 

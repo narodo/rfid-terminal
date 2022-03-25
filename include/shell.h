@@ -1,6 +1,8 @@
 #ifndef _SHELL_HEADER_GUARD_
 #define _SHELL_HEADER_GUARD_
 
+#include <SimpleSerialShell.h>
+
 #define WITH_HELPINFO
 #ifdef WITH_HELPINFO
 #define ADD_COMMAND(name, argumentHints, function) \
